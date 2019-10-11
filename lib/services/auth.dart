@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class User {
   User({@required this.uid});
@@ -19,6 +19,10 @@ abstract class AuthBase {
   Future<User> signInWithGoogle();
 
   Future<User> signInWithFacebook();
+
+  Future<User> signInWithEmailAndPassword(String email, String password);
+
+  Future<User> createUserWithEmailAndPassword(String email, String password);
 
   Future<void> signOut();
 }
@@ -84,6 +88,19 @@ class Auth implements AuthBase {
     } else {
       throw StateError('Missing Facebook Access Token');
     }
+  }
+
+  Future<User> signInWithEmailAndPassword(String email, String password) async {
+    final authResult = await _fireBaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+    return _userFromFireBase(authResult.user);
+  }
+
+  Future<User> createUserWithEmailAndPassword(String email,
+      String password) async {
+    final authResult = await _fireBaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    return _userFromFireBase(authResult.user);
   }
 
   Future<void> signOut() async {
